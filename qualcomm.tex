@@ -1,0 +1,404 @@
+\documentclass[10pt, letterpaper]{article}
+
+% Packages:
+\usepackage[
+    ignoreheadfoot, % set margins without considering header and footer
+    top=2 cm, % seperation between body and page edge from the top
+    bottom=2 cm, % seperation between body and page edge from the bottom
+    left=2 cm, % seperation between body and page edge from the left
+    right=2 cm, % seperation between body and page edge from the right
+    footskip=1.0 cm, % seperation between body and footer
+    % showframe % for debugging 
+]{geometry} % for adjusting page geometry
+\usepackage[explicit]{titlesec} % for customizing section titles
+\usepackage{tabularx} % for making tables with fixed width columns
+\usepackage{array} % tabularx requires this
+\usepackage[dvipsnames]{xcolor} % for coloring text
+\definecolor{primaryColor}{RGB}{0, 79, 144} % define primary color
+\usepackage{enumitem} % for customizing lists
+\usepackage{fontawesome5} % for using icons
+\usepackage{amsmath} % for math
+\usepackage[
+    pdftitle={Giovanni Santini's CV},
+    pdfauthor={Giovanni Santini},
+    pdfcreator={LaTeX with RenderCV},
+    colorlinks=true,
+    urlcolor=primaryColor
+]{hyperref} % for links, metadata and bookmarks
+\usepackage[pscoord]{eso-pic} % for floating text on the page
+\usepackage{calc} % for calculating lengths
+\usepackage{bookmark} % for bookmarks
+\usepackage{lastpage} % for getting the total number of pages
+\usepackage{changepage} % for one column entries (adjustwidth environment)
+\usepackage{paracol} % for two and three column entries
+\usepackage{ifthen} % for conditional statements
+\usepackage{needspace} % for avoiding page brake right after the section title
+\usepackage{iftex} % check if engine is pdflatex, xetex or luatex
+
+% Ensure that generate pdf is machine readable/ATS parsable:
+\ifPDFTeX
+    \input{glyphtounicode}
+    \pdfgentounicode=1
+    \usepackage[T1]{fontenc}
+    \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+\fi
+
+\usepackage[default, type1]{sourcesanspro} 
+
+% Some settings:
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt} % remove space before adjustwidth environment
+\pagestyle{empty} % no header or footer
+\setcounter{secnumdepth}{0} % no section numbering
+\setlength{\parindent}{0pt} % no indentation
+\setlength{\topskip}{0pt} % no top skip
+\setlength{\columnsep}{0.15cm} % set column seperation
+\usepackage{etoolbox}
+\makeatletter
+\let\ps@customFooterStyle\ps@plain % Copy the plain style to customFooterStyle
+\patchcmd{\ps@customFooterStyle}{\thepage}{
+    \color{gray}\textit{\small Giovanni Santini - Page \thepage{} of \pageref*{LastPage}}
+}{}{} % replace number by desired string
+\makeatother
+\pagestyle{customFooterStyle}
+
+\titleformat{\section}{
+    % avoid page braking right after the section title
+    \needspace{4\baselineskip}
+    % make the font size of the section title large and color it with the primary color
+    \Large\color{primaryColor}
+}{
+}{
+}{
+    % print bold title, give 0.15 cm space and draw a line of 0.8 pt thickness
+    % from the end of the title to the end of the body
+    \textbf{#1}\hspace{0.15cm}\titlerule[0.8pt]\hspace{-0.1cm}
+}[] % section title formatting
+
+\titlespacing{\section}{
+    % left space:
+    -1pt
+}{
+    % top space:
+    0.3 cm
+}{
+    % bottom space:
+    0.2 cm
+} % section title spacing
+
+% \renewcommand\labelitemi{$\vcenter{\hbox{\small$\bullet$}}$} % custom bullet points
+\newenvironment{highlights}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=0.4 cm + 10pt
+    ]
+}{
+    \end{itemize}
+} % new environment for highlights
+
+\newenvironment{highlightsforbulletentries}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=10pt
+    ]
+}{
+    \end{itemize}
+} % new environment for highlights for bullet entries
+
+
+\newenvironment{onecolentry}{
+    \begin{adjustwidth}{
+        0.2 cm + 0.00001 cm
+    }{
+        0.2 cm + 0.00001 cm
+    }
+}{
+    \end{adjustwidth}
+} % new environment for one column entries
+
+\newenvironment{twocolentry}[2][]{
+    \onecolentry
+    \def\secondColumn{#2}
+    \setcolumnwidth{\fill, 4.5 cm}
+    \begin{paracol}{2}
+}{
+    \switchcolumn \raggedleft \secondColumn
+    \end{paracol}
+    \endonecolentry
+} % new environment for two column entries
+
+\newenvironment{threecolentry}[3][]{
+    \onecolentry
+    \def\thirdColumn{#3}
+    \setcolumnwidth{1 cm, \fill, 4.5 cm}
+    \begin{paracol}{3}
+    {\raggedright #2} \switchcolumn
+}{
+    \switchcolumn \raggedleft \thirdColumn
+    \end{paracol}
+    \endonecolentry
+} % new environment for three column entries
+
+\newenvironment{header}{
+    \setlength{\topsep}{0pt}\par\kern\topsep\centering\color{primaryColor}\linespread{1.5}
+}{
+    \par\kern\topsep
+} % new environment for the header
+
+\newcommand{\placelastupdatedtext}{% \placetextbox{<horizontal pos>}{<vertical pos>}{<stuff>}
+  \AddToShipoutPictureFG*{% Add <stuff> to current page foreground
+    \put(
+        \LenToUnit{\paperwidth-2 cm-0.2 cm+0.05cm},
+        \LenToUnit{\paperheight-1.0 cm}
+    ){\vtop{{\null}\makebox[0pt][c]{
+        \small\color{gray}\textit{Last updated in March 2025}\hspace{\widthof{Last updated in March 2025}}
+    }}}%
+  }%
+}%
+
+% save the original href command in a new command:
+\let\hrefWithoutArrow\href
+
+% new command for external links:
+\renewcommand{\href}[2]{\hrefWithoutArrow{#1}{\ifthenelse{\equal{#2}{}}{ }{#2 }\raisebox{.15ex}{\footnotesize \faExternalLink*}}}
+
+
+\begin{document}
+    \newcommand{\AND}{\unskip
+        \cleaders\copy\ANDbox\hskip\wd\ANDbox
+        \ignorespaces
+    }
+    \newsavebox\ANDbox
+    \sbox\ANDbox{}
+
+    \placelastupdatedtext
+    \begin{header}
+        \fontsize{30 pt}{30 pt}
+        \textbf{Giovanni Santini}
+
+        \vspace{0.3 cm}
+
+        \normalsize
+        \mbox{{\footnotesize\faMapMarker*}\hspace*{0.13cm}Trento, IT}%
+        \kern 0.25 cm%
+        \AND%
+        \kern 0.25 cm%
+        \mbox{\hrefWithoutArrow{mailto:santigio2003@gmail.com}{{\footnotesize\faEnvelope[regular]}\hspace*{0.13cm}santigio2003@gmail.com}}%
+        \kern 0.25 cm%
+        \AND%
+        \kern 0.25 cm%
+        \mbox{\hrefWithoutArrow{tel:+39 3394072388}{{\footnotesize\faPhone*}\hspace*{0.13cm}+39 3394072388}}%
+        \kern 0.25 cm%
+        %\AND%
+        %\kern 0.25 cm%
+        %\mbox{\hrefWithoutArrow{https://yourwebsite.com/}{{\footnotesize\faLink}\hspace*{0.13cm}yourwebsite.com}}%
+        %\kern 0.25 cm%
+        %\AND%
+        %\kern 0.25 cm%
+        %\mbox{\hrefWithoutArrow{https://linkedin.com/in/yourusername}{{\footnotesize\faLinkedinIn}\hspace*{0.13cm}yourusername}}%
+        %\kern 0.25 cm%
+        \AND%
+        \kern 0.25 cm%
+        \mbox{\hrefWithoutArrow{https://github.com/San7o}{{\footnotesize\faGithub}\hspace*{0.13cm}San7o}}%
+    \end{header}
+
+    \vspace{0.3 cm - 0.3 cm}
+
+
+\iffalse
+    \section{Welcome to RenderCV!}
+
+
+
+        
+        \begin{onecolentry}
+            \href{https://rendercv.com}{RenderCV} is a LaTeX-based CV/resume version-control and maintenance app. It allows you to create a high-quality CV or resume as a PDF file from a YAML file, with \textbf{Markdown syntax support} and \textbf{complete control over the LaTeX code}.
+        \end{onecolentry}
+
+        \vspace{0.2 cm}
+
+        \begin{onecolentry}
+            The boilerplate content was inspired by \href{https://github.com/dnl-blkv/mcdowell-cv}{Gayle McDowell}.
+        \end{onecolentry}
+
+
+    
+    \section{Quick Guide}
+
+    \begin{onecolentry}
+        \begin{highlightsforbulletentries}
+
+
+        \item Each section title is arbitrary and each section contains a list of entries.
+
+        \item There are 7 unique entry types: \textit{BulletEntry}, \textit{TextEntry}, \textit{EducationEntry}, \textit{ExperienceEntry}, \textit{NormalEntry}, \textit{PublicationEntry}, and \textit{OneLineEntry}.
+
+        \item Select a section title, pick an entry type, and start writing your section!
+
+        \item \href{https://docs.rendercv.com/user_guide/}{Here}, you can find a comprehensive user guide for RenderCV.
+
+
+        \end{highlightsforbulletentries}
+    \end{onecolentry}
+
+\fi
+ 
+    \section{Education}
+
+
+
+        
+        \begin{threecolentry}{\textbf{BS}}{
+            Sept 2022 – Now
+        }
+            \textbf{University of Trento}, Computer Science
+            \begin{highlights}
+                %\item GPA: 3.9/4.0 (\href{https://example.com}{a link to somewhere})
+                \item \textbf{Coursework:} Computer Architecture, Operating Systems, Parallel Computing, Algorithms and Data Structures, Databases, Networking, Software Engineering, Calculus 1, Introduction to Computer and Network Security, Formal Languages and Compilers, Probability, Programming 1 and 2, Advanced Programming, Physics 1, Functioncal Programming, Linear algebra, Mathematical Foundations for Computer Science, Introduction to Web Programming, Logic, Introduction to Machine Learning
+            \end{highlights}
+        \end{threecolentry}
+
+                
+        \begin{threecolentry}{\textbf{}}{
+            March 2021 – July 2021
+          }
+        \textbf{Cyberchallenge}, Cybersecurity CTF Course and Competition
+            \begin{highlights}
+                %\item GPA: 3.9/4.0 (\href{https://example.com}{a link to somewhere})
+                \item I actively participated in the cybersecurity course \textit{Cyberchallenge} in 2021, held at the Università Politecnica delle Marche, achieving \textit{first place} in the internal competition and qualifying for the national Attack and Defense competition. The course introduced me to the fundamental concepts of cybersecurity with a hands-on approach through the CTF (Capture The Flag) format.
+            \end{highlights}
+        \end{threecolentry}
+
+    
+    \section{Projects}
+
+
+
+        
+        \begin{twocolentry}{
+            \href{https://github.com/San7o/hive-operator}{github.com/San7o/hive-operator}
+        }
+            \textbf{Hive-ebpf kubernetes operator}
+            \begin{highlights}
+                \item I am developing an eBPF-based inode access logging tool for kubernetes clusters. The project is supervides by Bruno Crispo from the University of Trento.
+                \item \textbf{Languages and Frameworks}: C, Go, Kubernetes, eBPF
+            \end{highlights}
+        \end{twocolentry}
+
+
+        \vspace{0.1 cm}
+
+        \begin{twocolentry}{
+            \href{https://github.com/San7o/Baldo-Scanner}{github.com/San7o/Baldo-Scanner}
+        }
+            \textbf{Baldo Scanner}
+            \begin{highlights}
+                \item I developed an antivirus damenon written in C++ and a linux kernel module. It incorporates static malware analysis capabilities through signatures and rules, a simple kernel level firewall, a sandboxed execution environment, and a kernel module to collect information about calls to system calls. 
+                \item \textbf{Languages and Framewroks}: C, C++, kprobes, netlink, character devices, sqlite, cmake
+            \end{highlights}
+        \end{twocolentry}
+
+        \vspace{0.1 cm}
+        
+        \begin{twocolentry}{
+            \href{https://github.com/San7o/santOS}{github.com/San7o/santOS}
+        }
+            \textbf{santOS}
+            \begin{highlights}
+                \item A general purpose operating system, currently supporting the i386 architecture. This project aims to build a full operating system with networking, filesystem, scheduler, IPC and userspace on multiple architectures. Currently the project is in Its early stages and I will keep working on It during my spare time.
+                \item \textbf{Languages and Framewroks}: C, bios, make 
+            \end{highlights}
+        \end{twocolentry}
+
+
+        
+
+\iffalse
+    \section{Experience}
+
+
+
+        
+        \begin{twocolentry}{
+            Cupertino, CA
+
+        June 2005 – Aug 2007
+        }
+            \textbf{Apple}, Software Engineer
+            \begin{highlights}
+                \item Reduced time to render user buddy lists by 75\% by implementing a prediction algorithm
+                \item Integrated iChat with Spotlight Search by creating a tool to extract metadata from saved chat transcripts and provide metadata to a system-wide search database
+                \item Redesigned chat file format and implemented backward compatibility for search
+            \end{highlights}
+        \end{twocolentry}
+
+
+        \vspace{0.2 cm}
+
+        \begin{twocolentry}{
+            Redmond, WA
+
+        June 2003 – Aug 2003
+        }
+            \textbf{Microsoft}, Software Engineer Intern
+            \begin{highlights}
+                \item Designed a UI for the VS open file switcher (Ctrl-Tab) and extended it to tool windows
+                \item Created a service to provide gradient across VS and VS add-ins, optimizing its performance via caching
+                \item Built an app to compute the similarity of all methods in a codebase, reducing the time from $\mathcal{O}(n^2)$ to $\mathcal{O}(n \log n)$
+                \item Created a test case generation tool that creates random XML docs from XML Schema
+                \item Automated the extraction and processing of large datasets from legacy systems using SQL and Perl scripts
+            \end{highlights}
+        \end{twocolentry}
+
+
+\fi
+    
+    \section{Certifications}
+
+        
+        \begin{samepage}
+            \begin{twocolentry}{
+                Dec 2024
+            }
+                \mbox{NVIDIA}, \textbf{Fundamentals of Accelerated Computing with OpenACC}, Hackathon 1º place
+
+                \vspace{0.10 cm}
+                \begin{highlights}
+                \item I partecipated in a two days workshop introducing the basics of accelerated computing using OpenACC, a powerful directive-based programming model. I learned how to optimize and parallelize code to fully leverage the capabilities of modern GPUs and CPUs.
+                  \item The event ended with an hackathon about optimizing a machine learning model, I achieved first place.
+                \end{highlights}
+                \vspace{0.10 cm}
+
+            \end{twocolentry}
+
+
+              
+        \end{samepage}
+
+
+\iffalse
+    \section{Technologies}
+
+
+
+        
+        \begin{onecolentry}
+            \textbf{Languages:} C++, C, Java, Objective-C, C\#, SQL, JavaScript
+        \end{onecolentry}
+
+        \vspace{0.2 cm}
+
+        \begin{onecolentry}
+            \textbf{Technologies:} .NET, Microsoft SQL Server, XCode, Interface Builder
+        \end{onecolentry}
+\fi
+
+    
+
+\end{document}
